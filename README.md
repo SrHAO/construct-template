@@ -19,6 +19,9 @@ Este repositorio es una **plantilla**. Todo lo siguiente es **ficticio y debe re
 
 1. **`src/data/site.ts`** — razón social, RFC, domicilio, teléfonos, correo, dominio y redes.
    El dominio se usa también en `astro.config.mjs`; mantenlos sincronizados.
+   En **Vercel**, `SITE_URL` se resuelve automáticamente al dominio de producción
+   (`VERCEL_PROJECT_PRODUCTION_URL`); solo se define la env var si usas un dominio
+   distinto en otro proveedor.
 2. **`src/i18n/legal.ts`** — Aviso de privacidad y Términos y Condiciones.
    Están redactados conforme a la **LFPDPPP** (art. 16; arts. 24, 29, 37 y 38 de su Reglamento),
    pero **deben revisarse por asesoría legal** y ajustarse a la actividad real y a los
@@ -61,7 +64,9 @@ Este repositorio es una **plantilla**. Todo lo siguiente es **ficticio y debe re
 `BaseLayout.astro` emite por página: `canonical`, `hreflang` (es/en/x-default),
 Open Graph, Twitter Card, `theme-color`, favicons, manifest y JSON-LD
 `LocalBusiness` generado desde `src/data/site.ts`. El sitemap lo genera
-`@astrojs/sitemap`; `public/robots.txt` lo referencia.
+`@astrojs/sitemap`; `public/robots.txt` lo referencia. El sitemap de `robots.txt`
+está fijado a `https://constru-demo.mx/`; actualízalo al dominio real del sitio
+cuando lo tengas.
 
 ## Accesibilidad
 

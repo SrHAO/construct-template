@@ -5,9 +5,19 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 
+// El dominio se resuelve en este orden: SITE_URL (env) -> produccion de Vercel
+// (VERCEL_PROJECT_PRODUCTION_URL) -> demo local. Vercel inyecta la segunda
+// variable sola, asi que canonical/sitemap/og siguen al dominio que conectes
+// en el dashboard sin tocar codigo.
+const SITE_URL =
+	process.env.SITE_URL ??
+	(process.env.VERCEL_PROJECT_PRODUCTION_URL
+		? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+		: 'https://constru-demo.mx');
+
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://constru-demo.mx',
+	site: SITE_URL,
 	i18n: {
 		locales: ['es', 'en'],
 		defaultLocale: 'es',

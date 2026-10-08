@@ -8,7 +8,13 @@ export const SITE_TITLE = 'Constru Construcciones';
 export const SITE_DESCRIPTION =
 	'Plantilla de sitio web para empresa de construcción: productos, servicios y contacto.';
 
-export const SITE_URL = 'https://constru-demo.mx';
+// Resolucion identica a astro.config.mjs: SITE_URL (env) -> produccion de Vercel
+// -> demo local. Mantener sincronizado con astro.config.mjs.
+export const SITE_URL =
+	process.env.SITE_URL ??
+	(process.env.VERCEL_PROJECT_PRODUCTION_URL
+		? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+		: 'https://constru-demo.mx');
 
 export const COMPANY = {
 	name: 'Constru Construcciones',
