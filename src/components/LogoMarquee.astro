@@ -1,0 +1,47 @@
+---
+// Carrusel infinito (marquee) de logos de marcas asociadas. La pista se duplica
+// en dos grupos [0,1] para que el loop sea continuo; mezcla SVG inline
+// (LogoCondumex/LogoHOLN) con logos en /public. kicker/title/subtitle son
+// opcionales (SectionTitle solo se pinta si hay title).
+import SectionTitle from './SectionTitle.astro';
+import LogoCondumex from './LogoCondumex.astro';
+import LogoHOLN from './LogoHOLN.astro';
+import '../styles/marquee.css';
+
+interface Props {
+	kicker?: string;
+	title?: string;
+	subtitle?: string;
+}
+
+const { kicker, title, subtitle } = Astro.props;
+
+const LOGOS = [
+	{ src: '/Ternium.svg', mod: '' },
+	{ src: '/Cemex.svg', mod: '' },
+	{ src: '/Comex_idVSKa4K59_2.svg', mod: '' },
+	{ src: '/construrama-seeklogo.svg', mod: '' },
+	{ src: '/HomeDeptod.svg', mod: '' },
+	{ src: '/DeAcero_logo.svg', mod: 'marquee__logo--deacero' },
+	{ src: '/Logo_de_Rotoplas.png', mod: 'marquee__logo--rotoplas' },
+];
+---
+
+<section class="section">
+	<div class="container-page">
+		{title && <SectionTitle kicker={kicker} title={title} subtitle={subtitle} />}
+		<div class="marquee">
+			<div class="marquee__track">
+				{[0, 1].map((group) => (
+					<div class="marquee__group">
+						<LogoCondumex />
+						{LOGOS.map((logo) => (
+							<img class={`marquee__logo ${logo.mod}`} src={logo.src} alt="" aria-hidden="true" loading="lazy" />
+						))}
+						<LogoHOLN group={group} />
+					</div>
+				))}
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,25 @@
+---
+// Tarjeta de marca para el indice de /productos/: muestra logo, nombre y
+// descripcion corta y enlaza al listado de lineas de esa marca.
+// La usa src/pages/[lang]/productos/index.astro.
+import { getLang, href, t } from '../i18n';
+import '../styles/brand-card.css';
+
+interface Props {
+	slug: string;
+	logo: string;
+	label: string;
+	description: string;
+}
+
+const { slug, logo, label, description } = Astro.props;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+---
+
+<a class="brand-card group" href={href(`/productos/${slug}/`, lang)}>
+	<img class="brand-card__logo" src={logo} alt={label} loading="lazy" />
+	<h2 class="brand-card__name">{label}</h2>
+	<p class="brand-card__description">{description}</p>
+	<span class="brand-card__hint">{ui.common.verCatalogoYLineas}</span>
+</a>

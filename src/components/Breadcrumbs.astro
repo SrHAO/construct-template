@@ -1,0 +1,30 @@
+---
+// Miga de pan generica: recibe items [{label, href?}] y pinta la jerarquia,
+// marcando el ultimo con aria-current="page". La usan las paginas de servicios
+// y de productos (indices y fichas de detalle).
+import { getLang, t } from '../i18n';
+import '../styles/breadcrumbs.css';
+
+interface Crumb {
+	label: string;
+	href?: string;
+}
+
+const { items } = Astro.props as { items: Crumb[] };
+const ui = t(getLang(Astro.params));
+---
+
+<nav class="breadcrumbs" aria-label={ui.breadcrumbs.ariaLabel}>
+	<ol class="breadcrumbs__list">
+		{items.map((item, i) => (
+			<li class:list={['breadcrumbs__item', { 'breadcrumbs__item--current': !item.href }]}>
+				{item.href ? (
+					<a class="breadcrumbs__link" href={item.href}>{item.label}</a>
+				) : (
+					<span aria-current="page">{item.label}</span>
+				)}
+				{i < items.length - 1 && <span class="breadcrumbs__sep" aria-hidden="true">/</span>}
+			</li>
+		))}
+	</ol>
+</nav>

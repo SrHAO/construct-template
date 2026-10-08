@@ -1,0 +1,90 @@
+@reference "./global.css";
+
+/* El dorado vive en .header para que alcance desde el borde superior. */
+.header {
+	@apply sticky top-0 z-50 w-full bg-[#daa520] shadow-sm;
+}
+
+.header__toggle {
+	@apply inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40;
+}
+
+/* Sobre el dorado del header: sin relleno, el dorado se ve a traves. El borde
+   oscuro es lo que le da forma de boton. Texto ink = 8.13:1 sobre #daa520. */
+.header__toggle--lang {
+	@apply border-[#0f172a]/30 bg-transparent text-[#0f172a] hover:border-[#0f172a]/50;
+}
+
+/* Solo el switch azul, sin pill alrededor. */
+.header__toggle--theme {
+	@apply border-transparent bg-transparent text-body;
+}
+
+.header__toggle-icon {
+	@apply h-4 w-4;
+}
+
+.theme-switch__track {
+	@apply relative block h-6 w-12 rounded-full border border-border;
+	background: #00aaff;
+	box-shadow: 0 0 8px rgba(0, 170, 255, 0.55);
+}
+
+.theme-switch__knob {
+	@apply absolute top-0 left-0 inline-flex h-6 w-6 items-center justify-center rounded-full;
+	background: #0f172a;
+	color: #ffffff;
+	transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-switch__icon {
+	@apply h-4 w-4 shrink-0;
+}
+
+.theme-switch__icon--sun {
+	display: none;
+}
+
+.theme-switch__icon--moon {
+	display: inline-flex;
+}
+
+.dark .theme-switch__icon--sun {
+	display: inline-flex;
+}
+
+.dark .theme-switch__icon--moon {
+	display: none;
+}
+
+.dark .theme-switch__knob {
+	transform: translateX(24px);
+}
+
+.header__top-inner {
+	@apply container-page flex items-center justify-end gap-3 py-2 text-sm;
+}
+
+.header__main {
+	@apply py-3;
+}
+
+.header__main-inner {
+	@apply container-page flex justify-center;
+}
+
+.header__brand {
+	@apply inline-flex items-center;
+}
+
+.header__name {
+	@apply text-xl font-bold tracking-wider text-[#0f172a] uppercase sm:text-2xl;
+}
+
+.header__nav {
+	@apply pb-3;
+}
+
+.header__nav-inner {
+	@apply container-page flex justify-center;
+}

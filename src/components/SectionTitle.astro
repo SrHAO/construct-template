@@ -1,0 +1,20 @@
+---
+// Cabecera de seccion reutilizable: kicker opcional, h2 obligatorio y subtitulo
+// opcional. Estilos en ../styles/section-title.css. El componente es "tonto"
+// (recibe todo por props ya traducido), no lee idioma por su cuenta.
+import '../styles/section-title.css';
+
+interface Props {
+	kicker?: string;
+	title: string;
+	subtitle?: string;
+}
+
+const { kicker, title, subtitle } = Astro.props;
+---
+
+<div class="section-title">
+	{kicker && <p class="section-title__kicker">{kicker}</p>}
+	<h2 class="section-title__title">{title}</h2>
+	{subtitle && <p class="section-title__subtitle">{subtitle}</p>}
+</div>

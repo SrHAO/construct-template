@@ -1,0 +1,50 @@
+---
+// Listado de servicios: grid de ServiceCard desde la coleccion content, con
+// garantias y FAQ al final.
+import Faq from '../../../components/Faq.astro';
+import Guarantees from '../../../components/Guarantees.astro';
+import ServiceCard from '../../../components/ServiceCard.astro';
+import SectionTitle from '../../../components/SectionTitle.astro';
+import { getLang, getServices, href, t } from '../../../i18n';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return [
+		{ params: { lang: 'es' } },
+		{ params: { lang: 'en' } },
+	];
+}
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const services = await getServices(lang);
+---
+
+<BaseLayout lang={lang} title={ui.servicios.title} description={ui.servicios.lead}>
+	<section class="page-head">
+		<div class="page-head__inner">
+			<h1 class="page-head__title">{ui.servicios.title}</h1>
+			<p class="page-head__lead">
+				{ui.servicios.lead}
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.servicios.soluciones.kicker} title={ui.servicios.soluciones.title} />
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{services.map((service, i) => (
+					<ServiceCard
+						href={href(`/servicios/${service.id}/`, lang)}
+						title={service.data.title}
+						description={service.data.description}
+						index={i + 1}
+					/>
+				))}
+			</div>
+		</div>
+	</section>
+	<Guarantees lang={lang} />
+	<Faq lang={lang} />
+</BaseLayout>

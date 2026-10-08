@@ -1,0 +1,43 @@
+---
+// Tarjeta de producto: enlace a la ficha /productos/[marca]/[linea]/[slug]/.
+// La primera tarjeta de la fila carga eager+high priority; el resto lazy.
+import type { CollectionEntry } from 'astro:content';
+import { getLang, href } from '../i18n';
+import '../styles/product-card.css';
+
+type Product = CollectionEntry<'products' | 'productsEn'>;
+
+const { product, index = 0 } = Astro.props as { product: Product; index?: number };
+const lang = getLang(Astro.params);
+const [marca, linea, slug] = product.id.split('/');
+const cardHref = href(`/productos/${marca}/${linea}/${slug}/`, lang);
+
+// Fotos de producto en /public, en orden numerico. Se omiten las que ya usan
+// otras secciones (00 en Hero, 01-04 en el carrusel de servicios, 08 en la
+// seccion de construccion), asi que aqui solo entran las nuevas: 05, 06, 07,
+// 09, 10 y 11. El ciclo es secuencial, no derivado del id, para que una fila
+// de N tarjetas (home) muestre N imagenes distintas en vez de repetir. Los ids
+// son identicos en es y en, asi que la ficha de un producto conserva la misma
+// foto al cambiar de idioma.
+const PRODUCT_IMAGES = ['/05.webp', '/06.webp', '/07.webp', '/09.webp', '/10.webp', '/11.webp'];
+
+const image = PRODUCT_IMAGES[index % PRODUCT_IMAGES.length];
+---
+
+<a href={cardHref} class="product-card group">
+	<div class="product-card__media">
+		<img
+			class="product-card__img"
+			src={image}
+			alt=""
+			aria-hidden="true"
+			loading={index === 0 ? 'eager' : 'lazy'}
+			decoding="async"
+			fetchpriority={index === 0 ? 'high' : 'auto'}
+		/>
+	</div>
+	<div class="product-card__body">
+		<h3 class="product-card__title">{product.data.title}</h3>
+		<p class="product-card__desc">{product.data.description}</p>
+	</div>
+</a>

@@ -1,0 +1,147 @@
+---
+// Modal legal generico (dialog accesible): rellena las plantillas del diccionario
+// con datos de data/site, pinta trigger + dialog y gestiona foco (focus trap),
+// Escape y scroll del body. Lo usan PrivacyModal y TermsModal.
+import { ADDRESS, COMPANY, EMAIL, PHONE } from '../data/site';
+import { getLang, t } from '../i18n';
+import type { LegalDictionary } from '../i18n/legal';
+import '../styles/privacy.css';
+
+interface Props {
+	doc: LegalDictionary;
+}
+
+const { doc } = Astro.props;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+
+const values: Record<string, string> = {
+	company: COMPANY.name,
+	legalName: COMPANY.legalName,
+	rfc: COMPANY.rfc,
+	address: `${ADDRESS.line1}, ${ADDRESS.line2}, ${ADDRESS.country}`,
+	phone: PHONE.display,
+	email: EMAIL.display,
+	privacyEmail: EMAIL.privacy,
+	website: ui.site.url,
+};
+
+const fill = (text: string) => text.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
+
+const sections = doc.sections.map(({ title, body }) => ({
+	title: fill(title),
+	body: fill(body),
+}));
+
+/**
+ * Hay dos modales legales en la misma pagina (privacidad y terminos), asi que el id
+ * del titulo debe ser unico o `aria-labelledby` resolveria siempre al primero del DOM.
+ */
+const modalId = `legal-${doc.trigger
+	.toLowerCase()
+	.normalize('NFD')
+	.replace(/[\u0300-\u036f]/g, '')
+	.replace(/[^a-z0-9]+/g, '-')
+	.replace(/^-|-$/g, '')}`;
+const titleId = `${modalId}-title`;
+---
+
+<div class="privacy">
+	<button type="button" class="footer__legal-btn" data-privacy-trigger aria-haspopup="dialog" aria-expanded="false">
+		{doc.trigger}
+	</button>
+
+	<div class="privacy-modal" data-privacy-modal aria-hidden="true">
+		<div class="privacy-modal__backdrop" data-privacy-close></div>
+		<div class="privacy-modal__dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabindex="-1">
+			<div class="privacy-modal__header">
+				<h3 id={titleId} class="privacy-modal__title">{doc.title}</h3>
+				<button type="button" class="privacy-modal__close" data-privacy-close aria-label={doc.ariaClose}>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M18 6 6 18" />
+						<path d="M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+			<p class="privacy-modal__intro">{fill(doc.intro)}</p>
+			<p class="privacy-modal__meta">{doc.lastUpdated}</p>
+			<div class="privacy-modal__sections">
+				{sections.map(({ title, body }) => (
+					<section class="privacy-modal__section">
+						<h4 class="privacy-modal__section-title">{title}</h4>
+						<p class="privacy-modal__section-body">{body}</p>
+					</section>
+				))}
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	const FOCUSABLE =
+		'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+
+	document.querySelectorAll('.privacy').forEach((root) => {
+		const trigger = root.querySelector<HTMLElement>('[data-privacy-trigger]');
+		const modal = root.querySelector<HTMLElement>('[data-privacy-modal]');
+		const dialog = root.querySelector<HTMLElement>('[role="dialog"]');
+		if (!trigger || !modal || !dialog) return;
+
+		let isOpen = false;
+		let lastFocused: HTMLElement | null = null;
+
+		const open = () => {
+			if (isOpen) return;
+			isOpen = true;
+			lastFocused = document.activeElement as HTMLElement | null;
+			modal.setAttribute('aria-hidden', 'false');
+			trigger.setAttribute('aria-expanded', 'true');
+			document.body.style.overflow = 'hidden';
+			dialog.focus();
+		};
+
+		const close = () => {
+			if (!isOpen) return;
+			isOpen = false;
+			modal.setAttribute('aria-hidden', 'true');
+			trigger.setAttribute('aria-expanded', 'false');
+			document.body.style.overflow = '';
+			if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
+		};
+
+		trigger.addEventListener('click', open);
+		root.querySelectorAll('[data-privacy-close]').forEach((el) => {
+			el.addEventListener('click', close);
+		});
+
+		document.addEventListener('keydown', (event: KeyboardEvent) => {
+			if (!isOpen) return;
+
+			if (event.key === 'Escape') {
+				close();
+				return;
+			}
+
+			if (event.key !== 'Tab') return;
+
+			/* Mantiene el foco dentro del dialog: nunca debe escapar a la pagina de fondo */
+			const items = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE));
+			if (items.length === 0) {
+				event.preventDefault();
+				dialog.focus();
+				return;
+			}
+			const first = items[0];
+			const last = items[items.length - 1];
+			const active = document.activeElement;
+
+			if (!event.shiftKey && active === last) {
+				event.preventDefault();
+				first.focus();
+			} else if (event.shiftKey && (active === first || active === dialog)) {
+				event.preventDefault();
+				last.focus();
+			}
+		});
+	});
+</script>

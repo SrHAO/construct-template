@@ -1,0 +1,37 @@
+---
+// Hero principal de la home: kicker, titulo con acento, subtitulos y fila de
+// estadisticas (todo desde ui.hero) mas imagen de /00.webp en el aside.
+// Estilos propios en ../styles/hero.css.
+import { getLang, t } from '../i18n';
+import '../styles/hero.css';
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+---
+
+<section class="hero">
+	<div class="hero__inner">
+		<div>
+			<p class="hero__kicker">{ui.hero.kicker}</p>
+			<h1 class="hero__title">
+				{ui.hero.titleBefore} <span>{ui.hero.titleAccent}</span> {ui.hero.titleAfter}
+			</h1>
+			<p class="hero__subtitle">
+				{ui.hero.subtitle}
+			</p>
+			<div class="hero__stats">
+				{ui.hero.stats.map((stat) => (
+					<div>
+						<div class="hero__stat-number">{stat.number}</div>
+						<div class="hero__stat-label">{stat.label}</div>
+					</div>
+				))}
+			</div>
+		</div>
+		<div class="hero__aside">
+			<div class="hero__placeholder">
+				<img src="/00.webp" alt="" aria-hidden="true" />
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,112 @@
+---
+// Aside "Otros servicios" del detalle de servicio: tabs WAI-ARIA (dots numerados)
+// que alternan paneles de enlaces; cada enlace cotiza ese servicio por WhatsApp
+// (no tienen pagina propia). Ver comentario sobre ids de instancia mas abajo.
+import { WHATSAPP } from '../data/site';
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import '../styles/otros-servicios.css';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+const { groups, goto, waIntro } = ui.otrosServicios;
+
+/** Estos servicios no tienen pagina de detalle, asi que se cotizan por WhatsApp. */
+const waHref = (item: string) => `${WHATSAPP.url}?text=${encodeURIComponent(waIntro(item))}`;
+
+/**
+ * Solo hay un bloque de "Otros servicios" por pagina (el aside del detalle de
+ * servicio), asi que los ids de tab y panel no llevan sufijo por instancia. Si
+ * el componente se llegara a usar dos veces en la misma pagina, habria que
+ * derivarlos de un prop, igual que hace LegalModal con su titulo.
+ */
+---
+
+<div class="otros" data-otros>
+	<ul class="otros__dots" role="tablist" aria-label={ui.servicios.detalle.otros}>
+		{groups.map((group, i) => (
+			<li role="presentation">
+				<button
+					type="button"
+					role="tab"
+					class="otros__dot"
+					data-tab
+					id={`otros-tab-${group.id}`}
+					aria-controls={`otros-panel-${group.id}`}
+					aria-selected={i === 0 ? 'true' : 'false'}
+					tabindex={i === 0 ? 0 : -1}
+					aria-label={goto(i + 1)}
+				>
+					{i + 1}
+				</button>
+			</li>
+		))}
+	</ul>
+
+	{groups.map((group, i) => (
+		<div
+			class="otros__panel"
+			role="tabpanel"
+			data-panel
+			id={`otros-panel-${group.id}`}
+			aria-labelledby={`otros-tab-${group.id}`}
+			hidden={i !== 0}
+		>
+			<h4 class="otros__label">{group.label}</h4>
+			<ul class="otros__items">
+				{group.items.map((item) => (
+					<li>
+						<a class="otros__item" href={waHref(item)} target="_blank" rel="noopener noreferrer">
+							{item}
+						</a>
+					</li>
+				))}
+			</ul>
+		</div>
+	))}
+</div>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-otros]').forEach((root) => {
+		const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+		const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+		if (tabs.length === 0) return;
+
+		const select = (index: number) => {
+			tabs.forEach((tab, i) => {
+				tab.setAttribute('aria-selected', String(i === index));
+				tab.tabIndex = i === index ? 0 : -1;
+			});
+			panels.forEach((panel, i) => {
+				panel.hidden = i !== index;
+			});
+		};
+
+		tabs.forEach((tab, i) => {
+			tab.addEventListener('click', () => select(i));
+		});
+
+		/* Patron WAI-ARIA de tabs: las flechas, Home y End mueven foco y seleccion. */
+		root.addEventListener('keydown', (event: KeyboardEvent) => {
+			const current = tabs.findIndex(
+				(tab) => tab.getAttribute('aria-selected') === 'true'
+			);
+			if (current < 0) return;
+
+			let next = -1;
+			if (event.key === 'ArrowRight') next = (current + 1) % tabs.length;
+			if (event.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+			if (event.key === 'Home') next = 0;
+			if (event.key === 'End') next = tabs.length - 1;
+			if (next < 0) return;
+
+			event.preventDefault();
+			select(next);
+			tabs[next].focus();
+		});
+	});
+</script>

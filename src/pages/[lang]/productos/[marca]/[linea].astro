@@ -1,0 +1,55 @@
+---
+// Listado de una linea de producto: breadcrumbs + grid paginado de productos
+// de esa linea.
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import ProductGrid from '../../../../components/ProductGrid.astro';
+import { CATALOG } from '../../../../data/site';
+import { getLang, getProducts, href, t } from '../../../../i18n';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return CATALOG.marcas.flatMap((marca) =>
+		CATALOG.lineas.map((linea) => [
+			{ params: { lang: 'es', marca: marca.slug, linea: linea.slug } },
+			{ params: { lang: 'en', marca: marca.slug, linea: linea.slug } },
+		]),
+	).flat();
+}
+
+const { marca = '', linea = '' } = Astro.params;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const marcaData = ui.catalog.marca(marca);
+const lineaData = ui.catalog.linea(marca, linea);
+const products = (await getProducts(lang)).filter(
+	(p) => p.data.marca === marca && p.data.linea === linea,
+);
+---
+
+<BaseLayout lang={lang} title={`${lineaData.label} · ${marcaData.label}`} description={lineaData.description}>
+	<div class="container-page mt-6">
+		<Breadcrumbs
+			items={[
+				{ label: ui.breadcrumbs.inicio, href: href('/', lang) },
+				{ label: ui.breadcrumbs.productos, href: href('/productos', lang) },
+				{ label: marcaData.label, href: href(`/productos/${marca}/`, lang) },
+				{ label: lineaData.label },
+			]}
+		/>
+	</div>
+
+	<section class="page-head">
+		<div class="page-head__inner">
+			<h1 class="page-head__title">
+				{lineaData.label} · {marcaData.label}
+			</h1>
+			<p class="page-head__lead">{lineaData.description}</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<ProductGrid products={products} />
+		</div>
+	</section>
+</BaseLayout>

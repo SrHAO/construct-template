@@ -1,0 +1,57 @@
+@reference "./global.css";
+
+.marquee {
+	@apply overflow-hidden py-6;
+	mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+	-webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee__track {
+	@apply flex w-max items-center;
+	animation: marquee 32s linear infinite;
+}
+
+.marquee__group {
+	@apply flex shrink-0 items-center gap-12 pr-12;
+}
+
+.marquee__logo {
+	@apply h-auto w-auto max-h-14 max-w-44 opacity-70 transition duration-300 ease-in-out hover:opacity-100;
+}
+
+.dark .marquee__logo--deacero,
+.dark .marquee__logo--rotoplas {
+	filter: grayscale(1) invert(1);
+}
+
+.marquee__logo--condumex {
+	color: #111;
+}
+
+.dark .marquee__logo--condumex {
+	color: #fff;
+}
+
+.marquee__logo--holn {
+	color: #1d4370;
+}
+
+.dark .marquee__logo--holn {
+	color: #6db3e8;
+}
+
+.marquee:hover .marquee__track {
+	animation-play-state: paused;
+}
+
+@keyframes marquee {
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.marquee__track {
+		animation: none;
+	}
+}

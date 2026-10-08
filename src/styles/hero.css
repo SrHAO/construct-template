@@ -1,0 +1,49 @@
+@reference "./global.css";
+
+.hero {
+	@apply bg-surface-alt;
+}
+
+.hero__inner {
+	@apply container-page grid items-center gap-10 py-16 sm:py-24 lg:grid-cols-2;
+}
+
+.hero__kicker {
+	@apply mb-3 inline-flex items-center gap-2 text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent;
+}
+
+.hero__title {
+	@apply text-4xl leading-tight font-bold text-ink sm:text-5xl;
+}
+
+.hero__title span {
+	@apply text-accent-dark dark:text-accent;
+}
+
+.hero__subtitle {
+	@apply mt-5 max-w-xl text-lg text-body;
+}
+
+.hero__stats {
+	@apply mt-12 grid grid-cols-3 gap-6 border-t border-border pt-8;
+}
+
+.hero__stat-number {
+	@apply text-3xl font-bold text-accent-dark dark:text-accent;
+}
+
+.hero__stat-label {
+	@apply mt-1 text-sm text-muted;
+}
+
+.hero__aside {
+	@apply hidden lg:block;
+}
+
+.hero__placeholder {
+	@apply aspect-[4/3] overflow-hidden rounded-lg border border-border bg-black/5 text-muted dark:bg-white/5;
+}
+
+.hero__placeholder img {
+	@apply h-full w-full object-cover;
+}

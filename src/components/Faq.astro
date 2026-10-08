@@ -1,0 +1,54 @@
+---
+// Seccion de preguntas frecuentes con <details>/<summary> nativos (sin JS).
+// Lee FAQ de data/trust y muestra PendingBlock si esta vacia. La usan la home y
+// la pagina de servicios.
+import { FAQ } from '../data/trust';
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import PendingBlock from './PendingBlock.astro';
+import SectionTitle from './SectionTitle.astro';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+---
+
+<section class="section">
+	<div class="container-page max-w-3xl">
+		<SectionTitle
+			kicker={ui.trust.faq.kicker}
+			title={ui.trust.faq.title}
+			subtitle={ui.trust.faq.subtitle}
+		/>
+
+		{FAQ.length > 0 ? (
+			<div class="space-y-3">
+				{FAQ.map((item) => (
+					<details class="group rounded-lg border border-border bg-surface p-5">
+						<summary class="flex cursor-pointer items-center justify-between gap-4 font-semibold text-ink">
+							{item.question}
+							<svg
+								class="h-5 w-5 shrink-0 text-muted transition-transform group-open:rotate-180"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<path d="m6 9 6 6 6-6" />
+							</svg>
+						</summary>
+						<p class="mt-3 text-sm text-body">{item.answer}</p>
+					</details>
+				))}
+			</div>
+		) : (
+			<PendingBlock lang={lang} />
+		)}
+	</div>
+</section>

@@ -1,0 +1,22 @@
+---
+// Mapa embebido de OpenStreetMap (iframe lazy) con la ubicacion de la empresa.
+// El bbox/marker van hardcodeados en el src. La usan Footer y la pagina de
+// contacto.
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import '../styles/contact.css';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+---
+
+<iframe
+	class="map__iframe"
+	src="https://www.openstreetmap.org/export/embed.html?bbox=-99.21%2C19.47%2C-99.13%2C19.51&layer=mapnik&marker=19.49%2C-99.17"
+	title={ui.map.title}
+	loading="lazy"
+></iframe>

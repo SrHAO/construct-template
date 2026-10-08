@@ -1,0 +1,58 @@
+@reference "./global.css";
+
+.svc-carousel {
+	@apply flex flex-col items-center;
+}
+
+.svc-carousel__stage {
+	@apply flex w-full items-center justify-center gap-3 sm:gap-6;
+}
+
+.svc-carousel__viewport {
+	@apply w-full min-w-0 max-w-3xl;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	overscroll-behavior-x: contain;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.svc-carousel__viewport::-webkit-scrollbar {
+	display: none;
+}
+
+.svc-carousel__track {
+	@apply flex w-full items-stretch;
+}
+
+.svc-carousel__slide {
+	@apply flex w-full shrink-0;
+	scroll-snap-align: start;
+	scroll-snap-stop: always;
+}
+
+.svc-carousel__arrow {
+	@apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised text-ink shadow-sm transition-colors hover:border-accent hover:text-accent-darkest focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:text-accent;
+}
+
+.svc-carousel__arrow svg {
+	@apply h-5 w-5;
+}
+
+.svc-carousel__dots {
+	@apply mt-6 flex items-center gap-2;
+}
+
+.svc-carousel__dot {
+	@apply h-2.5 w-2.5 rounded-full bg-border transition-colors hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40;
+}
+
+.svc-carousel__dot[aria-current='true'] {
+	@apply w-7 bg-accent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.svc-carousel__viewport {
+		scroll-behavior: auto;
+	}
+}

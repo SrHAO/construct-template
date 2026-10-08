@@ -1,0 +1,14 @@
+---
+// Boton flotante de WhatsApp ("Cotizaciones") fijo en pantalla. Se monta en
+// BaseLayout, asi que aparece en todas las paginas.
+import { WHATSAPP } from '../data/site';
+import { getLang, t } from '../i18n';
+import '../styles/cotizaciones-float.css';
+
+const ui = t(getLang(Astro.params));
+---
+
+<a class="cotizaciones-float" href={WHATSAPP.url} target="_blank" rel="noopener noreferrer" aria-label={ui.common.cotizaciones}>
+	<img class="cotizaciones-float__icon" src="/whatsapp.svg" alt="" aria-hidden="true" />
+	<span class="cotizaciones-float__label">{ui.common.cotizaciones}</span>
+</a>

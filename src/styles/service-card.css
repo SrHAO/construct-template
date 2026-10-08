@@ -1,0 +1,33 @@
+@reference "./global.css";
+
+.service-card {
+	@apply flex w-full flex-col overflow-hidden rounded-lg border border-border bg-surface-raised p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-accent/60 hover:shadow-md;
+}
+
+.service-card__icon {
+	@apply mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent/15 text-xl font-bold text-accent-darkest dark:text-accent;
+}
+
+.service-card__media {
+	@apply relative -mt-6 -mx-6 mb-4;
+}
+
+.service-card__img {
+	@apply aspect-video w-full object-cover;
+}
+
+.service-card__num {
+	@apply absolute top-3 left-3 flex h-8 w-8 items-center justify-center rounded-lg bg-accent/90 text-sm font-bold text-accent-darkest shadow-sm dark:text-ink;
+}
+
+.service-card__title {
+	@apply text-lg font-bold text-ink;
+}
+
+.service-card__desc {
+	@apply mt-2 flex-1 text-sm text-muted;
+}
+
+.service-card__link {
+	@apply mt-4 inline-flex items-center gap-1 font-bold text-brand-darkest hover:text-brand-dark dark:text-brand;
+}

@@ -1,0 +1,73 @@
+---
+// Detalle de servicio (getStaticPaths por slug en es/en): breadcrumbs, render
+// del contenido (astro:content), CTA de cotizacion por WhatsApp y aside
+// OtrosServicios.
+import { render } from 'astro:content';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import Button from '../../../components/Button.astro';
+import OtrosServicios from '../../../components/OtrosServicios.astro';
+import { WHATSAPP } from '../../../data/site';
+import { getLang, getServices, href, t } from '../../../i18n';
+import type { ServiceEntry } from '../../../i18n';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+	const es = await getServices('es');
+	const en = await getServices('en');
+	return [
+		...es.map((service) => ({ params: { lang: 'es', slug: service.id } })),
+		...en.map((service) => ({ params: { lang: 'en', slug: service.id } })),
+	];
+}
+
+const { slug } = Astro.params;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const services = (await getServices(lang)) as ServiceEntry[];
+const service = services.find((s) => s.id === slug)!;
+const { Content } = await render(service);
+---
+
+<BaseLayout lang={lang} title={service.data.title} description={service.data.description}>
+	<div class="container-page mt-6">
+		<Breadcrumbs
+			items={[
+				{ label: ui.breadcrumbs.inicio, href: href('/', lang) },
+				{ label: ui.breadcrumbs.servicios, href: href('/servicios', lang) },
+				{ label: service.data.title },
+			]}
+		/>
+	</div>
+
+	<section class="page-head">
+		<div class="page-head__inner">
+			<h1 class="page-head__title">{service.data.title}</h1>
+			<p class="page-head__lead">{service.data.description}</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page grid gap-10 lg:grid-cols-3">
+			<div class="content lg:col-span-2">
+				<Content />
+			</div>
+			<aside class="space-y-6">
+				<div class="rounded-lg border border-border bg-surface-raised p-6 shadow-sm">
+					<h3 class="text-lg font-bold text-ink">{ui.servicios.detalle.title}</h3>
+					<p class="mt-2 text-sm text-muted">
+						{ui.servicios.detalle.text}
+					</p>
+					<div class="mt-4">
+						<Button href={WHATSAPP.url} target="_blank" variant="cotiza">{ui.common.cotizarAhora}</Button>
+					</div>
+				</div>
+				<div>
+					<h3 class="mb-3 text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent">
+						{ui.servicios.detalle.otros}
+					</h3>
+					<OtrosServicios lang={lang} />
+				</div>
+			</aside>
+		</div>
+	</section>
+</BaseLayout>

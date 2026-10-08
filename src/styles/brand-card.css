@@ -1,0 +1,21 @@
+@reference "./global.css";
+
+.brand-card {
+	@apply flex flex-col items-center rounded-lg border border-border bg-surface-raised p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:border-accent/60 hover:shadow-md;
+}
+
+.brand-card__logo {
+	@apply h-14 w-auto transition-opacity duration-300 group-hover:opacity-80 dark:grayscale dark:invert;
+}
+
+.brand-card__name {
+	@apply mt-4 text-lg font-bold text-ink;
+}
+
+.brand-card__description {
+	@apply mt-2 text-sm text-muted;
+}
+
+.brand-card__hint {
+	@apply mt-4 text-sm font-bold text-accent-darkest transition-colors group-hover:text-accent dark:text-accent;
+}

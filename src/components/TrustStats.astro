@@ -1,0 +1,33 @@
+---
+// Franja de estadisticas (4 columnas) desde data/trust (STATS); muestra
+// PendingBlock si esta vacia. Se usa en la pagina Nosotros.
+import { STATS } from '../data/trust';
+import { getLang } from '../i18n';
+import type { Locale } from '../i18n';
+import PendingBlock from './PendingBlock.astro';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+---
+
+<section class="section section--alt">
+	<div class="container-page">
+		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+			{STATS.length > 0 ? (
+				STATS.map((stat) => (
+					<div class="rounded-lg border border-border bg-surface p-6 text-center">
+						<p class="text-3xl font-bold text-brand">{stat.value}</p>
+						<p class="mt-1 text-sm text-muted">{stat.label}</p>
+					</div>
+				))
+			) : (
+				<div class="lg:col-span-4">
+					<PendingBlock lang={lang} />
+				</div>
+			)}
+		</div>
+	</div>
+</section>

@@ -1,0 +1,47 @@
+@reference "./global.css";
+
+.otros__dots {
+	@apply mb-5 flex items-center gap-2;
+}
+
+/* El numero es la senal principal de que el circulo es un control; el relleno
+   solo lo refuerza. Asi se evita depender de un punto de color. */
+.otros__dot {
+	@apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-xs font-bold text-muted transition-colors hover:border-accent hover:text-accent-darkest focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:text-accent;
+}
+
+.otros__dot[aria-selected='true'] {
+	@apply border-accent bg-accent text-ink;
+}
+
+/* Evita que una utilidad de display del panel le haga caso al atributo hidden. */
+.otros__panel[hidden] {
+	display: none;
+}
+
+.otros__label {
+	@apply text-base font-bold text-ink;
+}
+
+.otros__items {
+	@apply mt-3 grid gap-2;
+}
+
+.otros__item {
+	@apply flex items-center rounded-md border border-border bg-surface px-4 py-3 text-base text-body transition-colors hover:border-brand hover:text-brand-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:text-brand;
+}
+
+.otros__item::after {
+	content: '\2192';
+	@apply ml-auto text-muted transition-transform;
+}
+
+.otros__item:hover::after {
+	@apply translate-x-1 text-brand-dark dark:text-brand;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.otros__item::after {
+		transition: none;
+	}
+}

@@ -1,0 +1,46 @@
+---
+// Tarjeta de servicio: enlace con numero (01, 02...) y opcionalmente imagen,
+// descripcion y CTA. compact sin imagen se usa en la pagina de construccion;
+// index===1 es la primera visible del carrusel, por eso va eager/high priority.
+import { getLang, t } from '../i18n';
+import '../styles/service-card.css';
+
+interface Props {
+	href: string;
+	title: string;
+	description: string;
+	index: number;
+	image?: string;
+	compact?: boolean;
+}
+
+const { href, title, description, index, image, compact } = Astro.props;
+const ui = t(getLang(Astro.params));
+---
+
+<a class="service-card" href={href}>
+	{image ? (
+		<div class="service-card__media">
+			<img
+				class="service-card__img"
+				src={image}
+				alt=""
+				aria-hidden="true"
+				loading={index === 1 ? 'eager' : 'lazy'}
+				decoding="async"
+				fetchpriority={index === 1 ? 'high' : 'auto'}
+			/>
+			<span class="service-card__num">{String(index).padStart(2, '0')}</span>
+		</div>
+	) : (
+		<div class="service-card__icon">{String(index).padStart(2, '0')}</div>
+	)}
+	<h3 class="service-card__title">{title}</h3>
+	{!compact && <p class="service-card__desc">{description}</p>}
+	{!compact && (
+		<span class="service-card__link">
+			{ui.common.verServicio}
+			<span aria-hidden="true">→</span>
+		</span>
+	)}
+</a>

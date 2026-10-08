@@ -1,0 +1,11 @@
+---
+// Modal de terminos y condiciones: adaptador fino que pasa ui.terms a
+// LegalModal. Se monta en el Footer junto a PrivacyModal.
+import { getLang, t } from '../i18n';
+import LegalModal from './LegalModal.astro';
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+---
+
+<LegalModal doc={ui.terms} />

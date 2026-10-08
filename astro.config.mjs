@@ -1,13 +1,30 @@
 // @ts-check
 
-import mdx from '@astrojs/mdx';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
-	integrations: [mdx(), sitemap()],
+	site: 'https://constru-demo.mx',
+	i18n: {
+		locales: ['es', 'en'],
+		defaultLocale: 'es',
+		// El enrutado es manual (src/pages/[lang]/) y siempre incluye el prefijo.
+		// Sin esto Astro sirve 'es' en la raiz, redirige /es/ -> / y el 404 aparece
+		// en desarrollo, aunque el build estatico sea correcto.
+		routing: {
+			prefixDefaultLocale: true,
+		},
+	},
+	redirects: {
+		'/': '/es',
+	},
+	integrations: [react(), sitemap()],
+	vite: {
+		plugins: [tailwindcss()],
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),

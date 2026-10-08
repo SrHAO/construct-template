@@ -1,0 +1,74 @@
+---
+// Pagina Nosotros: historia/mision de la empresa, franja de estadisticas
+// (TrustStats), credenciales (Credentials) y CTA.
+import Button from '../../components/Button.astro';
+import Credentials from '../../components/Credentials.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+import TrustStats from '../../components/TrustStats.astro';
+import { COMPANY } from '../../data/site';
+import { getLang, href, t } from '../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return [
+		{ params: { lang: 'es' } },
+		{ params: { lang: 'en' } },
+	];
+}
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+---
+
+<BaseLayout lang={lang} title={ui.nosotros.title} description={ui.nosotros.lead(COMPANY.name)}>
+	<section class="page-head">
+		<div class="page-head__inner">
+			<h1 class="page-head__title">{ui.nosotros.pageTitle}</h1>
+			<p class="page-head__lead">
+				{ui.nosotros.lead(COMPANY.name)}
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.nosotros.quienesSomos.kicker} title={ui.nosotros.quienesSomos.title} subtitle={ui.nosotros.quienesSomos.subtitle} />
+			<div class="grid items-center gap-10 lg:grid-cols-2">
+<div class="flex aspect-video items-center justify-center rounded-lg bg-black/5 text-faint dark:bg-white/5">
+				{ui.nosotros.placeholderImagen}
+			</div>
+			<div class="space-y-4 text-muted">
+				{ui.nosotros.parrafos.map((parrafo) => (
+					<p>{parrafo}</p>
+				))}
+			</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--alt">
+		<div class="container-page">
+			<SectionTitle kicker={ui.nosotros.valores.kicker} title={ui.nosotros.valores.title} />
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+				{ui.nosotros.valores.items.map((item) => (
+<div class="rounded-lg border border-border bg-surface-raised p-6 shadow-sm">
+					<h3 class="text-lg font-bold text-ink">{item.title}</h3>
+					<p class="mt-2 text-sm text-muted">{item.text}</p>
+				</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<TrustStats lang={lang} />
+	<Credentials lang={lang} />
+
+	<section class="section">
+		<div class="container-page text-center">
+			<SectionTitle kicker={ui.nosotros.trabajemos.kicker} title={ui.nosotros.trabajemos.title} subtitle={ui.nosotros.trabajemos.subtitle} />
+			<div class="flex flex-wrap justify-center gap-3">
+				<Button href={href('/contacto', lang)} variant="primary">{ui.common.contactanos}</Button>
+			</div>
+		</div>
+	</section>
+</BaseLayout>

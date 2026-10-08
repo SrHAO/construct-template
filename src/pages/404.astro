@@ -1,0 +1,42 @@
+---
+// Pagina 404: mensaje + botones a inicio/contacto y listado de enlaces a todas
+// las secciones de NAV. Sin getStaticPaths (solo existe como /404.html).
+import Button from '../components/Button.astro';
+import { NAV } from '../data/site';
+import { getLang, t } from '../i18n';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const home = `/${lang}`;
+---
+
+<BaseLayout lang={lang} title={ui.notFound.title} description={ui.notFound.lead}>
+	<section class="section">
+		<div class="container-page max-w-2xl text-center">
+			<p class="text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent">
+				404
+			</p>
+			<h1 class="mt-2 text-3xl font-bold text-ink sm:text-4xl">{ui.notFound.title}</h1>
+			<p class="mt-4 text-body">{ui.notFound.lead}</p>
+
+			<div class="mt-8 flex flex-wrap justify-center gap-3">
+				<Button href={home}>{ui.notFound.backHome}</Button>
+				<Button href={`${home}/contacto`} variant="outline">{ui.contacto.title}</Button>
+			</div>
+
+			<nav class="mt-12 border-t border-border pt-8" aria-label={ui.notFound.helpTitle}>
+				<h2 class="text-sm font-bold tracking-widest text-muted uppercase">{ui.notFound.helpTitle}</h2>
+				<ul class="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-3">
+					{NAV.map((item) => (
+						<li>
+							<a class="font-semibold text-brand hover:text-brand-dark" href={`${home}${item.href === '/' ? '' : item.href}`}>
+								{ui.nav.labels[item.key]}
+							</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+		</div>
+	</section>
+</BaseLayout>

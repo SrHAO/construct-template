@@ -1,0 +1,21 @@
+---
+// Grid responsivo de productos que envuelve ProductCard. cols=4 por defecto
+// (cols=3 deja la variante --cols-3 de product-grid.css). Recibe las entradas
+// de las colecciones products/productsEn ya filtradas por la pagina.
+import type { CollectionEntry } from 'astro:content';
+import ProductCard from './ProductCard.astro';
+import '../styles/product-grid.css';
+
+type Product = CollectionEntry<'products' | 'productsEn'>;
+
+interface Props {
+	products: Product[];
+	cols?: 3 | 4;
+}
+
+const { products, cols = 4 } = Astro.props;
+---
+
+<div class:list={['product-grid', { 'product-grid--cols-3': cols === 3 }]}>
+	{products.map((product, i) => <ProductCard product={product} index={i} />)}
+</div>

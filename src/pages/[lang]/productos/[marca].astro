@@ -1,0 +1,66 @@
+---
+// Ficha de marca: breadcrumbs, grid de sus lineas (CATALOG por marca) y
+// paginacion de lineas.
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ProductGrid from '../../../components/ProductGrid.astro';
+import SectionTitle from '../../../components/SectionTitle.astro';
+import { CATALOG } from '../../../data/site';
+import { getLang, getProducts, href, t } from '../../../i18n';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return [
+		...CATALOG.marcas.map((marca) => ({ params: { lang: 'es', marca: marca.slug } })),
+		...CATALOG.marcas.map((marca) => ({ params: { lang: 'en', marca: marca.slug } })),
+	];
+}
+
+const { marca = '' } = Astro.params;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const marcaData = ui.catalog.marca(marca);
+const marcaLogo = CATALOG.marcas.find((m) => m.slug === marca)?.logo;
+const products = (await getProducts(lang)).filter((p) => p.data.marca === marca);
+const grupos = CATALOG.lineas.map((linea) => ({
+	...linea,
+	label: ui.catalog.linea(marca, linea.slug).label,
+	description: ui.catalog.linea(marca, linea.slug).description,
+	productos: products.filter((p) => p.data.linea === linea.slug),
+}));
+---
+
+<BaseLayout lang={lang} title={marcaData.label} description={marcaData.description}>
+	<div class="container-page mt-6">
+		<Breadcrumbs
+			items={[
+				{ label: ui.breadcrumbs.inicio, href: href('/', lang) },
+				{ label: ui.breadcrumbs.productos, href: href('/productos', lang) },
+				{ label: marcaData.label },
+			]}
+		/>
+	</div>
+
+	<section class="page-head">
+		<div class="page-head__inner">
+			{marcaLogo && (
+				<img
+					src={marcaLogo}
+					alt={marcaData.label}
+					class="mb-6 h-16 w-auto dark:grayscale dark:invert"
+					loading="lazy"
+				/>
+			)}
+			<h1 class="page-head__title">{marcaData.label}</h1>
+			<p class="page-head__lead">{marcaData.description}</p>
+		</div>
+	</section>
+
+	{grupos.map((grupo) => (
+		<section class="section">
+			<div class="container-page">
+				<SectionTitle kicker={marcaData.label} title={grupo.label} subtitle={grupo.description} />
+				<ProductGrid products={grupo.productos} />
+			</div>
+		</section>
+	))}
+</BaseLayout>

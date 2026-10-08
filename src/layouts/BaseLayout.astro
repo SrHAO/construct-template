@@ -1,0 +1,165 @@
+---
+// Layout base de todas las paginas: <head> con SEO (canonical, hreflang, Open
+// Graph, Twitter, JSON-LD LocalBusiness), anti-FOUC del tema claro/oscuro
+// (script inline que persiste en localStorage y expone
+// window.__construApplyTheme para ThemeToggle) y el armazon Header + main(slot)
+// + Footer + CotizacionesFloat + ScrollTop.
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import CotizacionesFloat from '../components/CotizacionesFloat.astro';
+import ScrollTop from '../components/ScrollTop.astro';
+import { ADDRESS, COMPANY, EMAIL, PHONE, SOCIAL } from '../data/site';
+import { altLocaleHref, getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	lang?: Locale;
+}
+
+const { title, description, lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+const finalTitle = title?.trim() ? `${title.trim()} | ${ui.site.brand}` : ui.site.brand;
+const finalDescription = description ?? ui.site.description;
+const pathname = Astro.url.pathname;
+const altPath = altLocaleHref(pathname, lang);
+const canonicalUrl = `${ui.site.url}${pathname}`;
+const ogImage = `${ui.site.url}/og-image.png`;
+const ogLocale = lang === 'es' ? 'es_MX' : 'en_US';
+
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'LocalBusiness',
+	'@id': `${ui.site.url}/#organization`,
+	name: COMPANY.name,
+	legalName: COMPANY.legalName,
+	description: finalDescription,
+	url: ui.site.url,
+	image: ogImage,
+	telephone: PHONE.display,
+	email: EMAIL.display,
+	priceRange: '$$',
+	foundingDate: COMPANY.founded,
+	address: {
+		'@type': 'PostalAddress',
+		streetAddress: ADDRESS.line1,
+		addressLocality: 'Ciudad de México',
+		addressRegion: 'CDMX',
+		postalCode: '02300',
+		addressCountry: 'MX',
+	},
+	geo: {
+		'@type': 'GeoCoordinates',
+		latitude: COMPANY.geo.lat,
+		longitude: COMPANY.geo.lng,
+	},
+	openingHours: COMPANY.openingHours,
+	areaServed: COMPANY.areaServed.map((name) => ({ '@type': 'City', name })),
+	sameAs: [SOCIAL.facebook],
+	inLanguage: lang,
+};
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={finalDescription} />
+		<title>{finalTitle}</title>
+		<link rel="canonical" href={canonicalUrl} />
+		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
+		<link rel="alternate" hreflang={lang === 'es' ? 'en' : 'es'} href={`${ui.site.url}${altPath}`} />
+		<link rel="alternate" hreflang="x-default" href={`${ui.site.url}/es${altLocaleHref(pathname, 'en')}`} />
+
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="theme-color" content="#f1f5f9" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={ui.site.brand} />
+		<meta property="og:locale" content={ogLocale} />
+		<meta property="og:title" content={finalTitle} />
+		<meta property="og:description" content={finalDescription} />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={`${ui.site.brand} — ${COMPANY.slogan}`} />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={finalTitle} />
+		<meta name="twitter:description" content={finalDescription} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<script type="application/ld+json" set:html={JSON.stringify(structuredData)} is:inline />
+		<script is:inline>
+			(function () {
+				var THEME_COLOR_LIGHT = '#f1f5f9';
+				var THEME_COLOR_DARK = '#1d4ed8';
+				var STORAGE_KEY = 'constru-theme';
+				var root = document.documentElement;
+
+				function resolveTheme() {
+					var stored = null;
+					try {
+						stored = localStorage.getItem(STORAGE_KEY);
+					} catch (e) {
+						/* almacenamiento no disponible: se usa la preferencia del sistema */
+					}
+					if (stored === 'dark' || stored === 'light') return stored === 'dark';
+					return !!(
+						window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+					);
+				}
+
+				function applyTheme(isDark) {
+					root.classList.toggle('dark', isDark);
+					root.dataset.theme = isDark ? 'dark' : 'light';
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (meta) meta.setAttribute('content', isDark ? THEME_COLOR_DARK : THEME_COLOR_LIGHT);
+				}
+
+				applyTheme(resolveTheme());
+
+				window.__construApplyTheme = function (isDark) {
+					applyTheme(isDark);
+					try {
+						localStorage.setItem(STORAGE_KEY, isDark ? 'dark' : 'light');
+					} catch (e) {
+						/* almacenamiento no disponible */
+					}
+				};
+
+				var query = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+				if (!query) return;
+				query.addEventListener('change', function (event) {
+					var stored = null;
+					try {
+						stored = localStorage.getItem(STORAGE_KEY);
+					} catch (e) {
+						/* almacenamiento no disponible */
+					}
+					/* Solo se sigue al sistema mientras no exista una eleccion guardada */
+					if (stored === 'dark' || stored === 'light') return;
+					applyTheme(event.matches);
+				});
+			})();
+		</script>
+	</head>
+	<body>
+		<Header />
+		<main id="contenido">
+			<slot />
+		</main>
+		<Footer />
+		<CotizacionesFloat />
+		<ScrollTop />
+	</body>
+</html>

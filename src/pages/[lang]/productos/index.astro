@@ -1,0 +1,76 @@
+---
+// Catalogo de productos: BrandCard por marca (CATALOG) y grid paginado de
+// todas las lineas (PRODUCTS_PAGE_COUNT por pagina).
+import BrandCard from '../../../components/BrandCard.astro';
+import ProductGrid from '../../../components/ProductGrid.astro';
+import SectionTitle from '../../../components/SectionTitle.astro';
+import { CATALOG, PRODUCTS_PAGE_COUNT } from '../../../data/site';
+import { getLang, getProducts, t } from '../../../i18n';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return [
+		{ params: { lang: 'es' } },
+		{ params: { lang: 'en' } },
+	];
+}
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const marcas = CATALOG.marcas;
+const certificaciones = ui.productos.certificaciones;
+const products = (await getProducts(lang))
+	.sort((a, b) => a.id.localeCompare(b.id))
+	.slice(0, PRODUCTS_PAGE_COUNT);
+---
+
+<BaseLayout lang={lang} title={ui.productos.title} description={ui.productos.lead}>
+	<section class="page-head">
+		<div class="page-head__inner">
+			<h1 class="page-head__title">{ui.productos.title}</h1>
+			<p class="page-head__lead">
+				{ui.productos.lead}
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.productos.marcas.kicker} title={ui.productos.marcas.title} subtitle={ui.productos.marcas.subtitle} />
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+				{marcas.map((marca) => {
+					const data = ui.catalog.marca(marca.slug);
+					return (
+						<BrandCard
+							slug={marca.slug}
+							logo={marca.logo}
+							label={data.label}
+							description={data.description}
+						/>
+					);
+				})}
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--alt">
+		<div class="container-page">
+			<SectionTitle kicker={ui.productos.lista.kicker} title={ui.productos.lista.title} subtitle={ui.productos.lista.subtitle} />
+			<ProductGrid products={products} />
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.productos.garantia.kicker} title={ui.productos.garantia.title} subtitle={ui.productos.garantia.subtitle} />
+			<div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
+				{certificaciones.map((cert) => (
+<div class="rounded-lg border border-border bg-surface-raised p-6 text-center shadow-sm">
+					<div class="text-xl font-bold text-caution-dark dark:text-caution">✓</div>
+					<div class="mt-2 text-sm font-semibold text-ink">{cert}</div>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+</BaseLayout>

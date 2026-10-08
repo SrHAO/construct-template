@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local tooling / personal config
+.opencode/
+.vscode/
+.npm/
+.vercel/
+*.local
+
+# internal change log (not for public repo)
+CAMBIOS.txt

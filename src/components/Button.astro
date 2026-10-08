@@ -1,0 +1,27 @@
+---
+// Boton-enlace reutilizable con variantes: primary, outline, whatsapp, cotiza y
+// link. Las variantes de WhatsApp anaden el icono /whatsapp.svg y target=_blank
+// siempre lleva rel noopener noreferrer. Se usa en casi todas las paginas.
+interface Props {
+	href: string;
+	variant?: 'primary' | 'outline' | 'whatsapp' | 'cotiza' | 'link';
+	target?: string;
+	ariaLabel?: string;
+}
+
+const { href, variant = 'primary', target, ariaLabel } = Astro.props;
+const cls = `btn btn--${variant}`;
+---
+
+<a
+	href={href}
+	class={cls}
+	target={target}
+	rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+	aria-label={ariaLabel}
+>
+	{(variant === 'whatsapp' || variant === 'cotiza') && (
+		<img class="btn__icon" src="/whatsapp.svg" alt="" aria-hidden="true" />
+	)}
+	<slot />
+</a>

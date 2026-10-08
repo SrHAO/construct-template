@@ -1,0 +1,90 @@
+﻿---
+// Home bilingue (/es, /en): Hero, carrusel de servicios, grid de destacados
+// (HOME_FEATURED_COUNT productos), marcas, bloque de construccion, testimonios
+// y FAQ. getStaticPaths solo genera es/en.
+import Button from '../../components/Button.astro';
+import Faq from '../../components/Faq.astro';
+import Hero from '../../components/Hero.astro';
+import LogoMarquee from '../../components/LogoMarquee.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+import ServiceCarousel from '../../components/ServiceCarousel.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import { HOME_FEATURED_COUNT } from '../../data/site';
+import { getLang, getProducts, getServices, href, t } from '../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return [
+		{ params: { lang: 'es' } },
+		{ params: { lang: 'en' } },
+	];
+}
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const products = (await getProducts(lang)).sort((a, b) => a.id.localeCompare(b.id)).slice(0, HOME_FEATURED_COUNT);
+const services = await getServices(lang);
+const construccion = ui.home.construccion;
+---
+
+<BaseLayout lang={lang}>
+	<Hero />
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.home.servicios.kicker} title={ui.home.servicios.title} subtitle={ui.home.servicios.subtitle} />
+			<ServiceCarousel services={services} />
+			<div class="mt-8 text-center">
+				<Button href={href('/servicios/', lang)} variant="outline">{ui.common.verServicio}</Button>
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--alt">
+		<div class="container-page">
+			<SectionTitle kicker={ui.home.productos.kicker} title={ui.home.productos.title} subtitle={ui.home.productos.subtitle} />
+			<ProductGrid products={products} cols={3} />
+			<div class="mt-8 text-center">
+				<Button href={href('/productos/', lang)} variant="outline">{ui.common.verCatalogoCompleto}</Button>
+			</div>
+		</div>
+	</section>
+
+	<LogoMarquee
+		kicker={ui.home.marcas.kicker}
+		title={ui.home.marcas.title}
+		subtitle={ui.home.marcas.subtitle}
+	/>
+
+	<section class="section">
+		<div class="container-page grid items-center gap-10 lg:grid-cols-2">
+			<div class="aspect-video overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
+				<img src="/08.webp" alt="" aria-hidden="true" class="h-full w-full object-cover" />
+			</div>
+			<div>
+				<SectionTitle
+					kicker={construccion.kicker}
+					title={`${construccion.titleBefore}\u00a0${construccion.titleAccent}`}
+				/>
+				<p class="mt-2 text-body">{construccion.text}</p>
+				<div class="mt-6">
+					<Button href={href('/construccion/', lang)} variant="primary">{construccion.ctaConoce}</Button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<Testimonials lang={lang} />
+	<Faq lang={lang} />
+
+	<section class="section section--alt">
+		<div class="container-page text-center">
+			<h2 class="text-3xl font-bold text-ink dark:text-ink-light sm:text-4xl">{ui.home.final.title}</h2>
+			<p class="mx-auto mt-3 max-w-2xl text-body">{ui.home.final.text}</p>
+			<div class="mt-6 flex flex-wrap justify-center gap-3">
+				<Button href="#footer" variant="primary">{ui.common.contactanos}</Button>
+			</div>
+		</div>
+	</section>
+</BaseLayout>

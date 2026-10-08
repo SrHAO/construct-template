@@ -1,0 +1,110 @@
+---
+// Ficha de producto (render de la coleccion): breadcrumbs, tarjeta resumen del
+// producto y CTA de cotizacion por WhatsApp.
+import { render } from 'astro:content';
+import Breadcrumbs from '../../../../../components/Breadcrumbs.astro';
+import Button from '../../../../../components/Button.astro';
+import ProductCard from '../../../../../components/ProductCard.astro';
+import { WHATSAPP } from '../../../../../data/site';
+import { getLang, getProducts, href, t } from '../../../../../i18n';
+import type { ProductEntry } from '../../../../../i18n';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+	const es = await getProducts('es');
+	const en = await getProducts('en');
+	return [
+		...es.map((product) => {
+			const [marca, linea, producto] = product.id.split('/');
+			return { params: { lang: 'es', marca, linea, producto } };
+		}),
+		...en.map((product) => {
+			const [marca, linea, producto] = product.id.split('/');
+			return { params: { lang: 'en', marca, linea, producto } };
+		}),
+	];
+}
+
+const { marca = '', linea = '', producto: productoSlug = '' } = Astro.params;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const products = (await getProducts(lang)) as ProductEntry[];
+const product = products.find((p) => p.id === `${marca}/${linea}/${productoSlug}`)!;
+const { Content } = await render(product);
+
+const marcaData = ui.catalog.marca(marca);
+const lineaData = ui.catalog.linea(marca, linea);
+const related = products
+	.filter((p) => p.data.linea === linea && p.id !== product.id)
+	.slice(0, 3);
+
+const waHref = `https://wa.me/${WHATSAPP.number}?text=${encodeURIComponent(
+	ui.whatsapp.productMessage(product.data.title),
+)}`;
+---
+
+<BaseLayout lang={lang} title={product.data.title} description={product.data.description}>
+	<div class="container-page mt-6">
+		<Breadcrumbs
+			items={[
+				{ label: ui.breadcrumbs.inicio, href: href('/', lang) },
+				{ label: ui.breadcrumbs.productos, href: href('/productos', lang) },
+				{ label: marcaData.label, href: href(`/productos/${marca}/`, lang) },
+				{
+					label: lineaData.label,
+					href: href(`/productos/${marca}/${linea}/`, lang),
+				},
+				{ label: product.data.title },
+			]}
+		/>
+	</div>
+
+	<section class="page-head">
+		<div class="page-head__inner">
+			<p class="mb-1 text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent">
+				{marcaData.label} · {lineaData.label}
+			</p>
+			<h1 class="page-head__title">{product.data.title}</h1>
+			<p class="page-head__lead">{product.data.description}</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page grid gap-10 lg:grid-cols-3">
+			<div class="content lg:col-span-2">
+				<Content />
+			</div>
+			<aside class="space-y-6">
+				<div class="overflow-hidden rounded-lg border border-border bg-surface-raised shadow-sm">
+					<div class="flex aspect-video items-center justify-center bg-surface-alt text-2xl font-bold text-faint">
+						{product.data.title
+							.split(' ')
+							.map((w) => w[0])
+							.join('')
+							.slice(0, 2)
+							.toUpperCase()}
+					</div>
+					<div class="p-6">
+						<h3 class="text-lg font-bold text-ink">{ui.producto.detalle.title}</h3>
+						<p class="mt-2 text-sm text-muted">
+							{ui.producto.detalle.text}
+						</p>
+						<div class="mt-4">
+							<Button href={waHref} target="_blank" variant="whatsapp">{ui.common.cotizarProducto}</Button>
+						</div>
+					</div>
+				</div>
+				{related.length > 0 && (
+					<div>
+<h3 class="mb-3 text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent">
+						{ui.producto.detalle.relacionados}
+					</h3>
+						<div class="grid grid-cols-1 gap-4">
+							{related.map((item, i) => <ProductCard product={item} index={i} />)}
+						</div>
+					</div>
+				)}
+			</aside>
+		</div>
+	</section>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+// Seccion "Testimonios": grid de citas (autor/rol/proyecto) desde data/trust
+// (TESTIMONIALS); si esta vacia muestra PendingBlock. Se usa en la home.
+import { TESTIMONIALS } from '../data/trust';
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import PendingBlock from './PendingBlock.astro';
+import SectionTitle from './SectionTitle.astro';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+---
+
+<section class="section section--alt">
+	<div class="container-page">
+		<SectionTitle
+			kicker={ui.trust.testimonials.kicker}
+			title={ui.trust.testimonials.title}
+			subtitle={ui.trust.testimonials.subtitle}
+		/>
+
+		{TESTIMONIALS.length > 0 ? (
+			<ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+				{TESTIMONIALS.map((item) => (
+					<li class="flex h-full flex-col rounded-lg border border-border bg-surface p-6">
+						<blockquote class="flex-1 text-sm text-body">
+							<p>&ldquo;{item.quote}&rdquo;</p>
+						</blockquote>
+						<footer class="mt-4 border-t border-border pt-4">
+							<p class="font-semibold text-ink">{item.author}</p>
+							{item.role && <p class="text-sm text-muted">{item.role}</p>}
+							{item.project && <p class="text-sm text-muted">{item.project}</p>}
+						</footer>
+					</li>
+				))}
+			</ul>
+		) : (
+			<PendingBlock lang={lang} />
+		)}
+	</div>
+</section>

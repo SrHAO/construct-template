@@ -1,0 +1,17 @@
+@reference "./global.css";
+
+.section-title {
+	@apply mb-10 text-center;
+}
+
+.section-title__kicker {
+	@apply mb-2 inline-block text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent;
+}
+
+.section-title__title {
+	@apply text-3xl font-bold text-ink sm:text-4xl;
+}
+
+.section-title__subtitle {
+	@apply mx-auto mt-3 max-w-2xl text-muted;
+}

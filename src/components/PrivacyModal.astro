@@ -1,0 +1,11 @@
+---
+// Modal de politica de privacidad: adaptador fino que pasa ui.privacy a
+// LegalModal. Se monta en el Footer junto a TermsModal.
+import { getLang, t } from '../i18n';
+import LegalModal from './LegalModal.astro';
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+---
+
+<LegalModal doc={ui.privacy} />

@@ -1,0 +1,14 @@
+@reference "./global.css";
+
+.scroll-top {
+	@apply pointer-events-none fixed right-5 bottom-24 z-50 flex h-12 w-12 translate-y-2 items-center justify-center rounded-full bg-[#ff6a00] text-ink opacity-0 shadow-lg transition-all duration-300 hover:bg-[#ff4f00] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6a00]/50;
+	box-shadow: 0 0 12px rgba(255, 106, 0, 0.6);
+}
+
+.scroll-top--visible {
+	@apply pointer-events-auto translate-y-0 opacity-100;
+}
+
+.scroll-top svg {
+	@apply h-5 w-5;
+}

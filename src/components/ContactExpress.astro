@@ -1,0 +1,58 @@
+---
+// Formulario de contacto compacto: al enviar abre el cliente de correo via
+// mailto: con los datos rellenados (no hay backend). idPrefix permite usarlo
+// mas de una vez en la misma pagina sin colisionar ids. La usan Footer y la
+// pagina de contacto.
+import { EMAIL } from '../data/site';
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import '../styles/contact.css';
+
+interface Props {
+	lang?: Locale;
+	idPrefix?: string;
+}
+
+const { lang = getLang(Astro.params), idPrefix = 'ce' } = Astro.props;
+const ui = t(lang);
+const ids = {
+	nombre: `${idPrefix}-nombre`,
+	email: `${idPrefix}-email`,
+	mensaje: `${idPrefix}-mensaje`,
+};
+---
+
+<form class="contact-form" data-contact-form={idPrefix}>
+	<div class="contact-form__row">
+		<div class="contact-form__field">
+			<label class="contact-form__label" for={ids.nombre}>{ui.contactForm.nombre}</label>
+			<input class="contact-form__input" id={ids.nombre} name="nombre" type="text" placeholder={ui.contactForm.nombrePlaceholder} required />
+		</div>
+		<div class="contact-form__field">
+			<label class="contact-form__label" for={ids.email}>{ui.contactForm.correo}</label>
+			<input class="contact-form__input" id={ids.email} name="email" type="email" placeholder={ui.contactForm.correoPlaceholder} required />
+		</div>
+	</div>
+	<div class="contact-form__field">
+		<label class="contact-form__label" for={ids.mensaje}>{ui.contactForm.mensaje}</label>
+		<textarea class="contact-form__textarea" id={ids.mensaje} name="mensaje" placeholder={ui.contactForm.mensajePlaceholder} required></textarea>
+	</div>
+	<button class="btn btn--primary" type="submit">
+		<span class="btn__label">{ui.contactForm.enviar}</span>
+	</button>
+</form>
+
+<script is:inline define:vars={{ address: EMAIL.address, idPrefix, intro: ui.contactForm.waIntro, subject: ui.contactForm.mailSubject }}>
+	const form = document.querySelector<HTMLFormElement>('[data-contact-form="' + idPrefix + '"]');
+
+	form?.addEventListener('submit', (event) => {
+		event.preventDefault();
+		const data = new FormData(form);
+		const nombre = String(data.get('nombre') ?? '').trim();
+		const email = String(data.get('email') ?? '').trim();
+		const mensaje = String(data.get('mensaje') ?? '').trim();
+		const texto = `${intro} ${nombre} (${email}). ${mensaje}`;
+		const url = `mailto:${address}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(texto)}`;
+		window.location.href = url;
+	});
+</script>

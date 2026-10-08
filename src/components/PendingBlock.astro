@@ -1,0 +1,19 @@
+---
+// Placeholder de "contenido pendiente": recuadro discontinuo con texto de
+// data/trust. Se muestra cuando una lista de datos (garantias, cobertura,
+// testimonios, etc.) aun esta vacia.
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+---
+
+<div class="rounded-lg border border-dashed border-border bg-surface-alt p-4 text-sm text-muted">
+	<p class="font-semibold text-ink">{ui.trust.pending}</p>
+	<p class="mt-1">{ui.trust.pendingHint}</p>
+</div>

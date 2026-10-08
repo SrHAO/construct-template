@@ -1,0 +1,54 @@
+---
+// Seccion "Garantias": grid de tarjetas con icono de check desde data/trust
+// (GUARANTEES); si esta vacia muestra PendingBlock. La usan construccion y
+// servicios.
+import { GUARANTEES } from '../data/trust';
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import PendingBlock from './PendingBlock.astro';
+import SectionTitle from './SectionTitle.astro';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+---
+
+<section class="section">
+	<div class="container-page">
+		<SectionTitle
+			kicker={ui.trust.guarantees.kicker}
+			title={ui.trust.guarantees.title}
+			subtitle={ui.trust.guarantees.subtitle}
+		/>
+
+		{GUARANTEES.length > 0 ? (
+			<ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+				{GUARANTEES.map((item) => (
+					<li class="rounded-lg border border-border bg-surface p-6">
+						<div class="flex items-center gap-3">
+							<svg
+								class="h-6 w-6 text-accent-darkest dark:text-accent"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<path d="M20 6 9 17l-5-5" />
+							</svg>
+							<h3 class="text-lg font-bold text-ink">{item.title}</h3>
+						</div>
+						<p class="mt-2 text-sm text-body">{item.text}</p>
+					</li>
+				))}
+			</ul>
+		) : (
+			<PendingBlock lang={lang} />
+		)}
+	</div>
+</section>

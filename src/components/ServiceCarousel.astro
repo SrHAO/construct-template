@@ -1,0 +1,205 @@
+---
+// Carrusel de servicios con loop infinito por clones y dots de navegacion.
+// La logica (medicion por getBoundingClientRect, recentrado en clones, soporte
+// prefers-reduced-motion) esta comentada en el <script> mas abajo.
+import { getLang, href, t } from '../i18n';
+import type { ServiceEntry } from '../i18n';
+import ServiceCard from './ServiceCard.astro';
+import '../styles/service-carousel.css';
+
+interface Props {
+	services: ServiceEntry[];
+}
+
+const { services } = Astro.props;
+const lang = getLang(Astro.params);
+const ui = t(lang);
+---
+
+<div class="svc-carousel" data-carousel>
+	<div class="svc-carousel__stage">
+		<button type="button" class="svc-carousel__arrow" data-prev aria-label={ui.carousel.prev}>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M15 18l-6-6 6-6" />
+			</svg>
+		</button>
+
+		<div
+			class="svc-carousel__viewport"
+			data-viewport
+			tabindex="0"
+			role="group"
+			aria-roledescription="carrusel"
+			aria-label={ui.servicios.title}
+		>
+			<ul class="svc-carousel__track" data-track>
+				{services.map((service, i) => (
+					<li class="svc-carousel__slide" data-slide>
+						<ServiceCard
+							href={href(`/servicios/${service.id}/`, lang)}
+							title={service.data.title}
+							description={service.data.description}
+							index={i + 1}
+							image={`/${String(i + 1).padStart(2, '0')}.webp`}
+						/>
+					</li>
+				))}
+			</ul>
+		</div>
+
+		<button type="button" class="svc-carousel__arrow" data-next aria-label={ui.carousel.next}>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M9 18l6-6-6-6" />
+			</svg>
+		</button>
+	</div>
+
+	<div class="svc-carousel__dots">
+		{services.map((_, i) => (
+			<button
+				type="button"
+				class="svc-carousel__dot"
+				data-dot
+				aria-label={ui.carousel.goto(i + 1)}
+				aria-current={i === 0 ? 'true' : 'false'}
+			/>
+		))}
+	</div>
+</div>
+
+<script>
+	document.querySelectorAll('[data-carousel]').forEach((root) => {
+		const viewport = root.querySelector<HTMLElement>('[data-viewport]');
+		const track = viewport?.querySelector<HTMLElement>('[data-track]');
+		if (!viewport || !track) return;
+
+		const dots = Array.from(root.querySelectorAll('[data-dot]'));
+		const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
+		const next = root.querySelector<HTMLButtonElement>('[data-next]');
+
+		const real = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+		const total = real.length;
+		if (!total) return;
+
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		// Loop infinito por clones: se antepone una copia de la ultima tarjeta y se
+		// pospone una copia de la primera. Al llegar a un clon, sync() salta en
+		// silencio a su equivalente real, asi que el bucle nunca se nota.
+		// aria-hidden + inert sacan los clones del arbol de accesibilidad y del
+		// tab order, para no anunciar ni duplicar los enlaces.
+		if (total > 1) {
+			const clone = (node: HTMLElement) => {
+				const copy = node.cloneNode(true) as HTMLElement;
+				copy.setAttribute('aria-hidden', 'true');
+				copy.setAttribute('inert', '');
+				copy.dataset.clone = 'true';
+				return copy;
+			};
+			track.prepend(clone(real[total - 1]));
+			track.append(clone(real[0]));
+		}
+
+		const slides = Array.from(track.querySelectorAll<HTMLElement>('[data-slide]'));
+		const FIRST = 1; // indice de la primera tarjeta real dentro de `slides`
+		const LAST = total; // indice de la ultima tarjeta real
+
+		// Se mide la posicion real en pantalla en vez de calcular offsets, para no
+		// depender de que el ancho de la pista coincida con el del viewport.
+		const nearest = () => {
+			const left = viewport.getBoundingClientRect().left;
+			let best = FIRST;
+			let bestDistance = Infinity;
+			slides.forEach((slide, i) => {
+				const distance = Math.abs(slide.getBoundingClientRect().left - left);
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					best = i;
+				}
+			});
+			return best;
+		};
+
+		const toReal = (index: number) => (((index - FIRST) % total) + total) % total;
+
+		const scrollToSlide = (index: number, behavior: ScrollBehavior) => {
+			const slide = slides[index];
+			if (!slide) return;
+			const delta = slide.getBoundingClientRect().left - viewport.getBoundingClientRect().left;
+			viewport.scrollTo({ left: viewport.scrollLeft + delta, behavior });
+		};
+
+		let recentering = false;
+
+		const sync = () => {
+			const landed = nearest();
+
+			if (landed === 0 || landed === total + 1) {
+				// Ha aterrizado en un clon: se recentra en la real equivalente con
+				// comportamiento instantaneo, asi que el salto no se percibe.
+				if (!recentering) {
+					recentering = true;
+					scrollToSlide(landed === 0 ? LAST : FIRST, 'auto');
+				}
+			} else {
+				recentering = false;
+			}
+
+			const active = toReal(landed);
+			dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === active)));
+		};
+
+		const current = () => toReal(nearest());
+
+		// `target` es un indice real (0..total-1) que ya viene de current() o de un
+		// dot, asi que NO se vuelve a pasar por toReal(). Al envolver se apunta al
+		// clon contiguo para que se vea un unico paso de animacion y luego sync()
+		// recentra en silencio.
+		const goTo = (target: number) => {
+			let index = target + FIRST;
+			if (target < 0) index = 0;
+			else if (target >= total) index = total + 1;
+			scrollToSlide(index, reduced ? 'auto' : 'smooth');
+		};
+
+		prev?.addEventListener('click', () => goTo(current() - 1));
+		next?.addEventListener('click', () => goTo(current() + 1));
+		dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
+		let queued = false;
+		viewport.addEventListener(
+			'scroll',
+			() => {
+				if (queued) return;
+				queued = true;
+				requestAnimationFrame(() => {
+					queued = false;
+					sync();
+				});
+			},
+			{ passive: true }
+		);
+
+		window.addEventListener('resize', sync);
+
+		// Arranca sobre la primera tarjeta real, no sobre el clon de cabeza.
+		scrollToSlide(FIRST, 'auto');
+		sync();
+	});
+</script>

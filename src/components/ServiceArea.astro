@@ -1,0 +1,80 @@
+---
+// Seccion "Cobertura y horario": lista de areas desde data/trust (COVERAGE) con
+// icono de pin mas un aside con el horario (hardcodeado en el markup). Muestra
+// PendingBlock si COVERAGE esta vacia. Se usa en la pagina de construccion.
+import { COMPANY } from '../data/site';
+import { COVERAGE } from '../data/trust';
+import { getLang, t } from '../i18n';
+import type { Locale } from '../i18n';
+import PendingBlock from './PendingBlock.astro';
+import SectionTitle from './SectionTitle.astro';
+
+interface Props {
+	lang?: Locale;
+}
+
+const { lang = getLang(Astro.params) } = Astro.props;
+const ui = t(lang);
+---
+
+<section class="section section--alt">
+	<div class="container-page">
+		<div class="grid gap-10 lg:grid-cols-2">
+			<div>
+				<SectionTitle
+					kicker={ui.trust.coverage.kicker}
+					title={ui.trust.coverage.title}
+					subtitle={ui.trust.coverage.subtitle}
+				/>
+				{COVERAGE.length > 0 ? (
+					<ul class="grid gap-3 sm:grid-cols-2">
+						{COVERAGE.map((item) => (
+							<li class="flex items-start gap-3 rounded-lg border border-border bg-surface p-4">
+								<svg
+									class="mt-0.5 h-5 w-5 shrink-0 text-brand"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+									<circle cx="12" cy="10" r="3" />
+								</svg>
+								<div>
+									<p class="font-semibold text-ink">{item.area}</p>
+									{item.detail && <p class="text-sm text-muted">{item.detail}</p>}
+								</div>
+							</li>
+						))}
+					</ul>
+				) : (
+					<PendingBlock lang={lang} />
+				)}
+			</div>
+
+			<aside class="rounded-lg border border-border bg-surface p-6">
+				<h3 class="text-lg font-bold text-ink">{ui.trust.coverage.hoursLabel}</h3>
+				<dl class="mt-4 space-y-2 text-sm">
+					<div class="flex justify-between gap-4">
+						<dt class="text-muted">{ui.trust.coverage.weekdays}</dt>
+						<dd class="font-semibold text-ink">08:00 &ndash; 17:00</dd>
+					</div>
+					<div class="flex justify-between gap-4">
+						<dt class="text-muted">{ui.trust.coverage.saturday}</dt>
+						<dd class="font-semibold text-ink">08:00 &ndash; 13:00</dd>
+					</div>
+					<div class="flex justify-between gap-4">
+						<dt class="text-muted">{ui.trust.coverage.sunday}</dt>
+						<dd class="font-semibold text-ink">{ui.trust.coverage.closed}</dd>
+					</div>
+				</dl>
+				<p class="mt-4 border-t border-border pt-4 text-sm text-muted">
+					{ui.trust.coverage.note} <strong class="text-body">{COMPANY.name}</strong>
+				</p>
+			</aside>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,117 @@
+﻿@reference "./global.css";
+
+.nav__list {
+	@apply relative flex items-center justify-center gap-3;
+}
+
+.nav__item {
+	@apply relative;
+	z-index: 2;
+}
+
+.nav__link {
+	@apply relative inline-flex h-14 w-14 items-center justify-center rounded-full text-muted transition-colors hover:bg-red-600/10 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600/50 dark:text-[#334155] dark:hover:text-[#91241c] dark:focus-visible:ring-[#91241c];
+}
+
+.nav__link--active {
+	@apply text-red-600 dark:text-[#91241c];
+}
+
+.nav__icon {
+	@apply h-8 w-8;
+	position: relative;
+	z-index: 4;
+	transition: none;
+	transform: translateY(4px);
+}
+
+.nav__list.js-nav-ready .nav__icon {
+	transition: transform 0.5s ease;
+}
+
+.nav__item--active .nav__icon {
+	transform: translateY(28px);
+	color: #ffffff;
+}
+
+.nav__text {
+	@apply pointer-events-none absolute top-1 left-0 w-full text-center text-xs font-semibold;
+	color: #91241c;
+	z-index: 4;
+	opacity: 0;
+	transform: translateY(4px);
+	transition: none;
+}
+
+.nav__list.js-nav-ready .nav__text {
+	transition: opacity 0.35s ease, transform 0.5s ease;
+}
+
+.nav__item--active .nav__text {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.nav__indicator {
+	position: absolute;
+	z-index: 1;
+	top: calc(100% - 35px);
+	left: calc(50% - 35px);
+	width: 70px;
+	height: 70px;
+	border: 6px solid var(--color-surface);
+	border-radius: 50%;
+	background: #91241c;
+	transition: none;
+	transform: translateX(-136px);
+}
+
+.nav__list.js-nav-ready .nav__indicator {
+	transition: transform 0.5s ease;
+}
+
+.nav__indicator::before,
+.nav__indicator::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+}
+
+.nav__indicator::before {
+	left: -22px;
+	border-bottom-right-radius: 20px;
+	box-shadow: 1px 10px 0 0 var(--color-surface);
+}
+
+.nav__indicator::after {
+	right: -22px;
+	border-bottom-left-radius: 20px;
+	box-shadow: -1px 10px 0 0 var(--color-surface);
+}
+
+.nav__item:nth-child(1).nav__item--active ~ .nav__indicator {
+	transform: translateX(-136px);
+}
+
+.nav__item:nth-child(2).nav__item--active ~ .nav__indicator {
+	transform: translateX(-68px);
+}
+
+.nav__item:nth-child(3).nav__item--active ~ .nav__indicator {
+	transform: translateX(0);
+}
+
+.nav__item:nth-child(4).nav__item--active ~ .nav__indicator {
+	transform: translateX(68px);
+}
+
+.nav__item:nth-child(5).nav__item--active ~ .nav__indicator {
+	transform: translateX(136px);
+}
+
+.dark .nav__item--active .nav__text {
+	color: #ffffff;
+}

@@ -1,0 +1,25 @@
+@reference "./global.css";
+
+.breadcrumbs {
+	@apply py-4 text-sm text-muted;
+}
+
+.breadcrumbs__list {
+	@apply flex flex-wrap items-center gap-2;
+}
+
+.breadcrumbs__item {
+	@apply inline-flex items-center gap-2;
+}
+
+.breadcrumbs__sep {
+	@apply text-faint;
+}
+
+.breadcrumbs__link {
+	@apply transition-colors hover:text-brand dark:hover:text-brand-dark;
+}
+
+.breadcrumbs__item--current {
+	@apply font-semibold text-ink;
+}

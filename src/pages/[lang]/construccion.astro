@@ -1,0 +1,112 @@
+---
+// Pagina de construccion: grid de servicios de obra (ServiceCard), garantias,
+// cobertura y horario (ServiceArea) y CTA final.
+import Button from '../../components/Button.astro';
+import Guarantees from '../../components/Guarantees.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+import ServiceArea from '../../components/ServiceArea.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import { COMPANY } from '../../data/site';
+import { getLang, getServices, href, t } from '../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+	return [
+		{ params: { lang: 'es' } },
+		{ params: { lang: 'en' } },
+	];
+}
+
+const lang = getLang(Astro.params);
+const ui = t(lang);
+const services = await getServices(lang);
+const steps = ui.construccion.metodologia.steps;
+
+// Una foto por paso de metodologia, en el mismo orden que steps. Se indexa
+// por posicion, no por id, asi que un paso muestra la misma foto en es y en.
+const PROCESS_IMAGES = [
+	'/planeacion1.webp',
+	'/ejecucion-obra.webp',
+	'/calidad-obras-civiles.webp',
+	'/entrega.webp',
+];
+---
+
+<BaseLayout lang={lang} title={ui.construccion.title} description={ui.construccion.lead}>
+	<section class="page-head">
+		<div class="page-head__inner">
+			<h1 class="page-head__title">{ui.construccion.title}</h1>
+			<p class="page-head__lead">
+				{ui.construccion.lead}
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.construccion.servicios.kicker} title={ui.construccion.servicios.title} subtitle={ui.construccion.servicios.subtitle} />
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{services.map((service, i) => (
+					<ServiceCard
+						href={href(`/servicios/${service.id}/`, lang)}
+						title={service.data.title}
+						description={service.data.description}
+						index={i + 1}
+					/>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--alt">
+		<div class="container-page">
+			<SectionTitle kicker={ui.construccion.metodologia.kicker} title={ui.construccion.metodologia.title} />
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{steps.map((step, i) => (
+					<div class="overflow-hidden rounded-lg border border-border bg-surface-raised shadow-sm">
+						<div class="aspect-video overflow-hidden bg-black/5 dark:bg-white/5">
+							<img
+								class="h-full w-full object-cover"
+								src={PROCESS_IMAGES[i]}
+								alt=""
+								aria-hidden="true"
+								loading="lazy"
+								decoding="async"
+							/>
+						</div>
+						<div class="p-6">
+							<div class="text-sm font-bold tracking-widest text-accent-darkest uppercase dark:text-accent">{ui.construccion.metodologia.stepPrefix} {i + 1}</div>
+							<h3 class="mt-1 text-lg font-bold text-ink">{step}</h3>
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container-page">
+			<SectionTitle kicker={ui.construccion.obras.kicker} title={ui.construccion.obras.title} />
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+				{[1, 2, 3].map((i) => (
+<div class="flex aspect-video items-center justify-center rounded-lg bg-black/5 text-sm text-muted dark:bg-white/5">
+					{ui.construccion.obras.placeholder(i)}
+				</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<ServiceArea lang={lang} />
+	<Guarantees lang={lang} />
+
+	<section class="bg-surface-alt py-12 text-center text-ink sm:py-16">
+		<div class="container-page">
+			<h2 class="text-3xl font-bold text-ink sm:text-4xl">{ui.construccion.final.title}</h2>
+			<p class="mx-auto mt-3 max-w-2xl text-body">{ui.construccion.final.text(COMPANY.name)}</p>
+			<div class="mt-6 flex flex-wrap justify-center gap-3">
+				<Button href="#contacto-express" variant="primary">{ui.common.solicitarCotizacion}</Button>
+			</div>
+		</div>
+	</section>
+</BaseLayout>

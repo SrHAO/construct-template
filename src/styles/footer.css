@@ -1,0 +1,106 @@
+@reference "./global.css";
+
+.footer {
+	@apply bg-surface-alt text-body;
+	scroll-margin-top: 5rem;
+}
+
+.footer__express {
+	scroll-margin-top: 5rem;
+}
+
+.footer__contact {
+	@apply border-b border-border;
+}
+
+.footer__contact-grid {
+	@apply container-page grid items-center gap-10 py-12 lg:grid-cols-2;
+}
+
+.footer__address-title {
+	@apply text-ink;
+}
+
+.footer__address-line {
+	@apply flex items-start gap-3 text-base;
+}
+
+.footer__address-link {
+	@apply transition-colors hover:text-brand-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 dark:hover:text-brand;
+}
+
+.footer__icon {
+	@apply mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-accent/15;
+}
+
+.footer__link {
+	@apply inline-flex items-center gap-2 text-base transition-colors hover:text-brand-dark dark:hover:text-brand;
+}
+
+.footer__link-img {
+	@apply h-9 w-9;
+}
+
+.footer__address-pin {
+	@apply mt-1 h-7 w-7 shrink-0 text-accent;
+}
+
+.dark .footer__logo {
+	filter: invert(1);
+}
+
+.footer__main {
+	@apply bg-surface-alt text-body;
+}
+
+.footer__grid {
+	@apply container-page grid items-start gap-10 py-14 md:grid-cols-3;
+}
+
+.footer__block-title {
+	@apply mb-4 text-base font-bold tracking-widest text-ink uppercase;
+}
+
+.footer__created {
+	@apply flex flex-col items-center gap-2 text-center;
+}
+
+.footer__created-label {
+	@apply text-base font-semibold tracking-widest text-muted uppercase;
+}
+
+.footer__created-logo {
+	@apply inline-flex transition-transform hover:scale-105;
+}
+
+.footer__created-img {
+	@apply h-32 w-auto;
+}
+
+.footer__social-col {
+	@apply flex flex-col items-center text-center;
+}
+
+.footer__social {
+	@apply flex items-center justify-center gap-4;
+}
+
+.footer__social .footer__link-img {
+	@apply h-18 w-18;
+}
+
+.footer__legal {
+	@apply border-t border-border bg-black/5 dark:bg-white/5;
+}
+
+.footer__legal-inner {
+	@apply container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-muted md:flex-row;
+}
+
+.footer__legal-links {
+	@apply flex items-center gap-4;
+}
+
+.footer__legal-link {
+	@apply text-muted transition-colors hover:text-brand-dark dark:hover:text-brand;
+}
