@@ -74,7 +74,7 @@
 }
 
 .footer__created-img {
-	@apply h-32 w-auto;
+	@apply h-[9.2rem] w-auto;
 }
 
 .footer__social-col {

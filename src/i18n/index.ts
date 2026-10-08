@@ -141,8 +141,8 @@ export const es = {
 		facebookAria: 'Facebook',
 		whatsappAria: 'WhatsApp',
 		gmailAria: 'Enviar correo',
-		logoAria: 'Portfolio del creador',
-		contactCreator: 'Contactar al creador',
+		logoAria: 'Portfolio del desarrollador',
+		contactCreator: 'Contactar al desarrollador',
 		rights: (year: number, company: string) =>
 			`© ${year} ${company}. Todos los derechos reservados.`,
 	},
@@ -531,8 +531,8 @@ site: {
 		facebookAria: 'Facebook',
 		whatsappAria: 'WhatsApp',
 		gmailAria: 'Send an email',
-		logoAria: 'Creator portfolio',
-		contactCreator: 'Contact the creator',
+		logoAria: 'Developer portfolio',
+		contactCreator: 'Contact the developer',
 		rights: (year: number, company: string) =>
 			`© ${year} ${company}. All rights reserved.`,
 	},
