@@ -7,7 +7,11 @@ import '../styles/product-card.css';
 
 type Product = CollectionEntry<'products' | 'productsEn'>;
 
-const { product, index = 0 } = Astro.props as { product: Product; index?: number };
+const {
+	product,
+	index = 0,
+	image: imageOverride,
+} = Astro.props as { product: Product; index?: number; image?: string };
 const lang = getLang(Astro.params);
 const [marca, linea, slug] = product.id.split('/');
 const cardHref = href(`/productos/${marca}/${linea}/${slug}/`, lang);
@@ -21,7 +25,7 @@ const cardHref = href(`/productos/${marca}/${linea}/${slug}/`, lang);
 // foto al cambiar de idioma.
 const PRODUCT_IMAGES = ['/05.webp', '/06.webp', '/07.webp', '/09.webp', '/10.webp', '/11.webp'];
 
-const image = PRODUCT_IMAGES[index % PRODUCT_IMAGES.length];
+const image = imageOverride ?? PRODUCT_IMAGES[index % PRODUCT_IMAGES.length];
 ---
 
 <a href={cardHref} class="product-card group">

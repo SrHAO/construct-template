@@ -22,6 +22,14 @@ const certificaciones = ui.productos.certificaciones;
 const products = (await getProducts(lang))
 	.sort((a, b) => a.id.localeCompare(b.id))
 	.slice(0, PRODUCTS_PAGE_COUNT);
+
+// Imagen fija por producto, solo en esta pagina (los demas grids conservan el
+// ciclo de PRODUCT_IMAGES). Los ids son identicos en es y en.
+const IMAGE_OVERRIDES: Record<string, string> = {
+	'marca-3/linea-1/producto-1': '/12.webp',
+	'marca-3/linea-1/producto-2': '/13.webp',
+	'marca-3/linea-2/producto-3': '/14.webp',
+};
 ---
 
 <BaseLayout lang={lang} title={ui.productos.title} description={ui.productos.lead}>
@@ -56,7 +64,7 @@ const products = (await getProducts(lang))
 	<section class="section section--alt">
 		<div class="container-page">
 			<SectionTitle kicker={ui.productos.lista.kicker} title={ui.productos.lista.title} subtitle={ui.productos.lista.subtitle} />
-			<ProductGrid products={products} />
+			<ProductGrid products={products} imageOverrides={IMAGE_OVERRIDES} />
 		</div>
 	</section>
 

@@ -11,11 +11,14 @@ type Product = CollectionEntry<'products' | 'productsEn'>;
 interface Props {
 	products: Product[];
 	cols?: 3 | 4;
+	imageOverrides?: Record<string, string>;
 }
 
-const { products, cols = 4 } = Astro.props;
+const { products, cols = 4, imageOverrides } = Astro.props;
 ---
 
 <div class:list={['product-grid', { 'product-grid--cols-3': cols === 3 }]}>
-	{products.map((product, i) => <ProductCard product={product} index={i} />)}
+	{products.map((product, i) => (
+		<ProductCard product={product} index={i} image={imageOverrides?.[product.id]} />
+	))}
 </div>

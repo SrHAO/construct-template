@@ -25,9 +25,11 @@
 	@apply bg-[#ff7a00] text-ink hover:bg-[#e86f00];
 }
 
-/* El glifo de /whatsapp.svg viene horneado en #25D366, asi que sobre el fondo
-   naranja se leeria verde. brightness(0) lo lleva a negro e invert(1) a blanco. */
-.btn--cotiza .btn__icon {
+/* El glifo de /whatsapp.svg viene horneado en #25D366, asi que sobre fondos del
+   mismo tono (boton verde) o naranja se leeria verde. brightness(0) lo lleva a
+   negro e invert(1) a blanco. */
+.btn--cotiza .btn__icon,
+.btn--whatsapp .btn__icon {
 	filter: brightness(0) invert(1);
 }
 

@@ -27,6 +27,17 @@ const grupos = CATALOG.lineas.map((linea) => ({
 	description: ui.catalog.linea(marca, linea.slug).description,
 	productos: products.filter((p) => p.data.linea === linea.slug),
 }));
+
+// Imagen fija por producto en las paginas de marca (ids identicos en es/en).
+const IMAGE_OVERRIDES: Record<string, string> = {
+	'marca-1/linea-2/producto-3': '/07.webp', // Lamina galvanizada (Ternium)
+	'marca-2/linea-1/producto-1': '/09.webp', // Cemento CPC 40 (Cemex)
+	'marca-2/linea-1/producto-2': '/10.webp', // Cemento CPC 30 R (Cemex)
+	'marca-2/linea-2/producto-3': '/11.webp', // Concreto premezclado (Cemex)
+	'marca-3/linea-1/producto-1': '/12.webp', // Block de concreto (Construrama)
+	'marca-3/linea-1/producto-2': '/13.webp', // Cal hidratada (Construrama)
+	'marca-3/linea-2/producto-3': '/14.webp', // Impermeabilizante acrilico (Construrama)
+};
 ---
 
 <BaseLayout lang={lang} title={marcaData.label} description={marcaData.description}>
@@ -59,7 +70,7 @@ const grupos = CATALOG.lineas.map((linea) => ({
 		<section class="section">
 			<div class="container-page">
 				<SectionTitle kicker={marcaData.label} title={grupo.label} subtitle={grupo.description} />
-				<ProductGrid products={grupo.productos} />
+				<ProductGrid products={grupo.productos} imageOverrides={IMAGE_OVERRIDES} />
 			</div>
 		</section>
 	))}

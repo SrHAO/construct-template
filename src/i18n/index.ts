@@ -19,7 +19,7 @@ export function altLocaleHref(pathname: string, currentLang: Locale): string {
 	const other: Locale = currentLang === 'es' ? 'en' : 'es';
 	const withoutLocale = pathname.replace(/^\/(es|en)(?=\/|$)/, '');
 	const rest = withoutLocale || '/';
-	return `/${other}${rest === '/' ? '' : rest}`;
+	return rest === '/' ? `/${other}/` : `/${other}${rest}`;
 }
 
 export const es = {
