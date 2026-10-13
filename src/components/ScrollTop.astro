@@ -39,6 +39,7 @@ const ui = t(getLang(Astro.params));
 		window.addEventListener('resize', update);
 
 		btn.addEventListener('click', () => {
+			document.querySelector('.header')?.classList.remove('header--hidden');
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		});
 	}

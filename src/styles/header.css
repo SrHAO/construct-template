@@ -2,7 +2,13 @@
 
 /* El dorado vive en .header para que alcance desde el borde superior. */
 .header {
-	@apply sticky top-0 z-50 w-full bg-[#daa520] shadow-sm;
+	@apply sticky top-0 z-50 w-full bg-[#daa520] shadow-sm transition-transform duration-300 ease-out;
+	will-change: transform;
+}
+
+/* Oculta la barra al hacer scroll hacia abajo; se retira al subir. */
+.header--hidden {
+	@apply -translate-y-full;
 }
 
 .header__toggle {

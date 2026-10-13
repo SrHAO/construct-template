@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "dev:4322": "astro dev --port 4322",
+    "dev:4322:network": "astro dev --host --port 4322",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",

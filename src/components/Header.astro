@@ -81,3 +81,41 @@ const pathname = Astro.url.pathname;
 		});
 	}
 </script>
+
+<script>
+	// Oculta el header al bajar y lo muestra al subir. Se usa rAF para no
+	// saturar el hilo principal y un umbral (HIDE_OFFSET) para ignorar
+	// micro-movimientos. Cerca del tope el header siempre queda visible.
+	const header = document.querySelector<HTMLElement>('.header');
+
+	if (header) {
+		let lastScrollTop: number = window.scrollY;
+		let ticking: boolean = false;
+		const HIDE_OFFSET: number = 8;
+
+		const update = (): void => {
+			const current: number = window.scrollY;
+			if (current <= 0) {
+				header.classList.remove('header--hidden');
+			} else {
+				const delta: number = current - lastScrollTop;
+				if (Math.abs(delta) >= HIDE_OFFSET) {
+					header.classList.toggle('header--hidden', delta > 0);
+				}
+			}
+			lastScrollTop = current;
+			ticking = false;
+		};
+
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (!ticking) {
+					ticking = true;
+					requestAnimationFrame(update);
+				}
+			},
+			{ passive: true },
+		);
+	}
+</script>
