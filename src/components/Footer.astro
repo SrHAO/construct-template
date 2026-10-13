@@ -13,6 +13,7 @@ import '../styles/footer.css';
 const lang = getLang(Astro.params);
 const ui = t(lang);
 const year = new Date().getFullYear();
+const logo = lang === 'en' ? '/AlanLogoEn.svg' : '/AlanLogoEs.svg';
 ---
 
 <footer class="footer" id="footer">
@@ -69,7 +70,7 @@ const year = new Date().getFullYear();
 					rel="noopener noreferrer"
 					aria-label={ui.footer.logoAria}
 				>
-					<img class="footer__created-img footer__logo" src="/AlanLogo.svg" alt={ui.footer.logoAria} />
+					<img class="footer__created-img footer__logo" src={logo} alt={ui.footer.logoAria} />
 				</a>
 			</div>
 			<div class="footer__social-col">
